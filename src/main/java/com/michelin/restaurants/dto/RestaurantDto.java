@@ -10,14 +10,12 @@ import java.util.List;
 public record RestaurantDto(
         @NotBlank @Length(max = 90) String name,
         @NotBlank @Length(max = 255) String address,
-        List<EvaluationEntity> evaluations,
         String imageUrl
 ) {
     public static RestaurantDto buildFromEntity(RestaurantEntity restaurantEntity) {
         return new RestaurantDto(
                 restaurantEntity.getName(),
                 restaurantEntity.getAddress(),
-                restaurantEntity.getEvaluations(),
                 restaurantEntity.getImageUrl()
         );
     }

@@ -31,13 +31,14 @@ public class EvaluationEntity {
     private RestaurantEntity restaurant;
 
 
-    public static EvaluationEntity buildFromDto(EvaluationDto evaluationDto) {
+    public static EvaluationEntity buildFromDto(EvaluationDto evaluationDto, RestaurantEntity restaurantEntity) {
         var evaluationEntity = new EvaluationEntity();
 
         evaluationEntity.setAuthor(evaluationDto.author());
         evaluationEntity.setComment(evaluationDto.comment());
         evaluationEntity.setNote(evaluationDto.note());
         evaluationEntity.setPhotosUrls(evaluationDto.photosUrls());
+        evaluationEntity.setRestaurant(restaurantEntity);
 
         return evaluationEntity;
     }

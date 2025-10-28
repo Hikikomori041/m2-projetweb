@@ -1,6 +1,7 @@
 package com.michelin.restaurants.controller;
 
 import com.michelin.restaurants.dto.EvaluationDto;
+import com.michelin.restaurants.dto.RestaurantDto;
 import com.michelin.restaurants.service.EvaluationService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -39,6 +40,15 @@ public class EvaluationController {
     }
 
 
+    // Route test
+    @GetMapping("/{restaurantId}")
+    @Operation(summary = "Récupère tous les évaluations d'un restaurant, par son identifiant")
+    public List<EvaluationDto> getEvaluationsByRestaurantId(@PathVariable Long restaurantId) {
+        return this.evaluationService.getEvaluationsByRestaurantId(restaurantId)
+                .stream()
+                .map(EvaluationDto::buildFromEntity)
+                .toList();
+    }
 
 }
 

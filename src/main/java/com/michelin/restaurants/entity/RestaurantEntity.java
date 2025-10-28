@@ -33,6 +33,7 @@ public class RestaurantEntity {
         restaurantEntity.setName(restaurantDto.name());
         restaurantEntity.setAddress(restaurantDto.address());
         restaurantEntity.setImageUrl(restaurantDto.imageUrl());
+
         return restaurantEntity;
     }
 }

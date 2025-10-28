@@ -2,7 +2,9 @@ package com.michelin.restaurants.service;
 
 import com.michelin.restaurants.dto.EvaluationDto;
 import com.michelin.restaurants.entity.EvaluationEntity;
+import com.michelin.restaurants.entity.RestaurantEntity;
 import com.michelin.restaurants.repository.EvaluationRepository;
+import com.michelin.restaurants.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -10,18 +12,23 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class EvaluationService {
     private final EvaluationRepository evaluationRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Autowired
-    public EvaluationService(EvaluationRepository evaluationRepository) {
+    public EvaluationService(EvaluationRepository evaluationRepository, RestaurantRepository restaurantRepository) {
         this.evaluationRepository = evaluationRepository;
+        this.restaurantRepository = restaurantRepository;
     }
 
     public EvaluationEntity addEvaluation(EvaluationDto evaluationDto) {
-        return this.evaluationRepository.save(EvaluationEntity.buildFromDto(evaluationDto));
+        RestaurantEntity restaurantEntity = this.restaurantRepository.findById(evaluationDto.restaurantId())
+                .orElseThrow( () -> new NoSuchElementException("Le restaurant avec l'id " + evaluationDto.restaurantId() + " n'a pas été trouvé."));
+        return this.evaluationRepository.save(EvaluationEntity.buildFromDto(evaluationDto, restaurantEntity));
     }
 
     public EvaluationDto deleteEvaluation(Long id) {
@@ -43,5 +50,12 @@ public class EvaluationService {
         //todo: récupérer la liste des évaluations par mots-clés (index ?)
 
         return evaluationDtos;
+    }
+
+    public List<EvaluationEntity> getEvaluationsByRestaurantId(Long restaurantId) {
+        if(!this.restaurantRepository.existsById(restaurantId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Le restaurant avec l'identifiant '" + restaurantId + "' n'existe pas");
+        }
+        return this.evaluationRepository.findAllByRestaurantId(restaurantId);
     }
 }

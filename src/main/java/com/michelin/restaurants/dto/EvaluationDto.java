@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import java.util.List;
 
 public record EvaluationDto(
+    Long restaurantId,
     @NotBlank @Length(max = 50) String author,
     @NotBlank @Length(max = 255) String comment,
     @Min(0) @Max(3) Integer note,
@@ -16,6 +17,7 @@ public record EvaluationDto(
 ) {
     public static EvaluationDto buildFromEntity(EvaluationEntity evaluationEntity) {
         return new EvaluationDto(
+                evaluationEntity.getRestaurant().getId(),
                 evaluationEntity.getAuthor(),
                 evaluationEntity.getComment(),
                 evaluationEntity.getNote(),
