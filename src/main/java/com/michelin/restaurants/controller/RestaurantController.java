@@ -1,6 +1,7 @@
 package com.michelin.restaurants.controller;
 
 import com.michelin.restaurants.dto.EditRestaurantDto;
+import com.michelin.restaurants.dto.FullRestaurantDto;
 import com.michelin.restaurants.dto.RestaurantDto;
 import com.michelin.restaurants.service.RestaurantService;
 import jakarta.validation.Valid;
@@ -19,19 +20,14 @@ public class RestaurantController {
 
     // Récupère tous les restaurants
     @GetMapping()
-    public List<RestaurantDto> getAllRestaurants() {
-        //todo: ajouter les évaluations
-        return this.restaurantService.getAllRestaurants()
-                .stream()
-                .map(RestaurantDto::buildFromEntity)
-                .toList();
+    public List<FullRestaurantDto> getAllFullRestaurants() {
+        return this.restaurantService.getAllFullRestaurants();
     }
 
-    // Récupère un restaurant en particulier
+    // Récupère un restaurant en particulier, avec sa moyenne d'évaluations
     @GetMapping("/{id}")
-    //todo: ajouter les évaluations
-    public RestaurantDto getRestaurantById(@PathVariable("id") Long id) {
-        return RestaurantDto.buildFromEntity(this.restaurantService.getRestaurantById(id));
+    public FullRestaurantDto getFullRestaurantById(@PathVariable("id") Long id) {
+        return this.restaurantService.getFullRestaurantById(id);
     }
 
     // Crée un restaurant

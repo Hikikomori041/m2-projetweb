@@ -4,15 +4,16 @@ import com.michelin.restaurants.entity.EvaluationEntity;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
 
 public record EvaluationDto(
-    Long restaurantId,
+    @NotNull Long restaurantId,
     @NotBlank @Length(max = 50) String author,
     @NotBlank @Length(max = 255) String comment,
-    @Min(0) @Max(3) Integer note,
+    @NotNull @Min(0) @Max(3) Integer note,
     List<String> photosUrls
 ) {
     public static EvaluationDto buildFromEntity(EvaluationEntity evaluationEntity) {

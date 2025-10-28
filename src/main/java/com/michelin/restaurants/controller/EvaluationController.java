@@ -58,9 +58,7 @@ Evaluations
 - La possibilité d'ajouter une évaluation sur un restaurant
 - La possibilité de supprimer une évaluation
 - La possibilité de récupérer les évaluations en fonction d'un (ou plusieurs) mots-clés
-- La possibilité pour un utilisateur de récupérer toutes les évaluations qu'il a lui-même créé.
-
-Les routes retournant un (ou plusieurs) restaurant (marquées par *) doivent aussi retourner la moyenne des notes du-dit restaurant dans une propriété nommée "moyenne". Si le restaurant ne dispose d'aucune evaluation, la moyenne est de -1.
+- La possibilité pour un utilisateur de récupérer toutes les évaluations qu'il a lui-même créées.
 
 Les cas d'erreur doivent être gérés pour retourner une erreur (404, 500, etc) contenant :
 - Un code

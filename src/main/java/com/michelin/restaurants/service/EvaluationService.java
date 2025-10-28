@@ -28,12 +28,13 @@ public class EvaluationService {
     public EvaluationEntity addEvaluation(EvaluationDto evaluationDto) {
         RestaurantEntity restaurantEntity = this.restaurantRepository.findById(evaluationDto.restaurantId())
                 .orElseThrow( () -> new NoSuchElementException("Le restaurant avec l'id " + evaluationDto.restaurantId() + " n'a pas été trouvé."));
+
         return this.evaluationRepository.save(EvaluationEntity.buildFromDto(evaluationDto, restaurantEntity));
     }
 
     public EvaluationDto deleteEvaluation(Long id) {
         if(!this.evaluationRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "L'évaluation avec l'identifiant '" + id + "' n'existe pas !");
+            throw new NoSuchElementException("L'évaluation avec l'identifiant '" + id + "' n'existe pas !");
         }
 
         //todo: supprimer les photos
@@ -45,16 +46,16 @@ public class EvaluationService {
     }
 
     public List<EvaluationDto> getEvaluationsByKeywords(List<String> keywords) {
-        List<EvaluationDto> evaluationDtos = new ArrayList<>();
+        List<EvaluationDto> evaluations = new ArrayList<>();
 
         //todo: récupérer la liste des évaluations par mots-clés (index ?)
 
-        return evaluationDtos;
+        return evaluations;
     }
 
     public List<EvaluationEntity> getEvaluationsByRestaurantId(Long restaurantId) {
         if(!this.restaurantRepository.existsById(restaurantId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Le restaurant avec l'identifiant '" + restaurantId + "' n'existe pas");
+            throw new NoSuchElementException("Le restaurant avec l'identifiant '" + restaurantId + "' n'existe pas");
         }
         return this.evaluationRepository.findAllByRestaurantId(restaurantId);
     }

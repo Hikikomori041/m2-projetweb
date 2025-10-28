@@ -1,14 +1,14 @@
 package com.michelin.restaurants.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/")
+@Controller
 public class AppController {
-    @GetMapping
-    public String index() {
-        return "Vous avez demandé la page d'accueil de la nouvelle API de restaurants de Michelin.\nMais il n'y a rien à voir ici...";
+
+    // J'ai décidé que la route par défaut redirige vers Swagger, pour aller plus vite
+    @GetMapping("/")
+    public String redirectToSwagger() {
+        return "redirect:/swagger-ui/index.html";
     }
 }
