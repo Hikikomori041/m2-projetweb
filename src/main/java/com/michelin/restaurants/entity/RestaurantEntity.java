@@ -4,13 +4,15 @@ import com.michelin.restaurants.dto.RestaurantDto;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity(name = "restaurant")
 @Data
 public class RestaurantEntity {
 
     @Id
     @Column(name = "id")
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name")
@@ -22,9 +24,12 @@ public class RestaurantEntity {
     @Column(name = "imageUrl")
     private String imageUrl;
 
+    @OneToMany(mappedBy = "restaurant")
+    private List<EvaluationEntity> evaluations;
+
     public static RestaurantEntity buildFromDto(RestaurantDto restaurantDto) {
         var restaurantEntity = new RestaurantEntity();
-        restaurantEntity.setId(restaurantDto.id());
+
         restaurantEntity.setName(restaurantDto.name());
         restaurantEntity.setAddress(restaurantDto.address());
         restaurantEntity.setImageUrl(restaurantDto.imageUrl());

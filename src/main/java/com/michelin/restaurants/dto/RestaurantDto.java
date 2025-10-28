@@ -1,23 +1,23 @@
 package com.michelin.restaurants.dto;
 
+import com.michelin.restaurants.entity.EvaluationEntity;
 import com.michelin.restaurants.entity.RestaurantEntity;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.List;
+
 public record RestaurantDto(
-        @Min(0) Long id,
         @NotBlank @Length(max = 90) String name,
         @NotBlank @Length(max = 255) String address,
-//        List<Evaluation> evaluations,
+        List<EvaluationEntity> evaluations,
         String imageUrl
 ) {
     public static RestaurantDto buildFromEntity(RestaurantEntity restaurantEntity) {
         return new RestaurantDto(
-                 restaurantEntity.getId(),
                 restaurantEntity.getName(),
                 restaurantEntity.getAddress(),
-//                restaurantEntity.getEvaluations(),
+                restaurantEntity.getEvaluations(),
                 restaurantEntity.getImageUrl()
         );
     }

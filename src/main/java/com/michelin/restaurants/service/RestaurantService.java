@@ -4,13 +4,11 @@ import com.michelin.restaurants.dto.EditRestaurantDto;
 import com.michelin.restaurants.dto.RestaurantDto;
 import com.michelin.restaurants.entity.RestaurantEntity;
 import com.michelin.restaurants.repository.RestaurantRepository;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class RestaurantService {
@@ -30,9 +28,6 @@ public class RestaurantService {
     }
 
     public RestaurantEntity addRestaurant(RestaurantDto restaurantDto) {
-        if(this.restaurantRepository.existsById(restaurantDto.id())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Le restaurant avec l'identifiant '" + restaurantDto.id() + "' existe déjà !");
-        }
         return this.restaurantRepository.save(RestaurantEntity.buildFromDto(restaurantDto));
     }
 
