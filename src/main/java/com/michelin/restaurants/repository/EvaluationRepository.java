@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface EvaluationRepository extends JpaRepository<EvaluationEntity, Long> {
     List<EvaluationEntity> findAllByRestaurantId(Long restaurantId);
+    List<EvaluationEntity> findAllByAuthor(String author);
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public record EvaluationDto(
     @NotNull Long restaurantId,
-    @NotBlank @Length(max = 50) String author,
+    @Length(max = 50) String author,
     @NotBlank @Length(max = 255) String comment,
     @NotNull @Min(0) @Max(3) Integer note,
     List<String> photosUrls

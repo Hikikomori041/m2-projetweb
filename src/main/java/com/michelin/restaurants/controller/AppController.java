@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AppController {
 
     // J'ai décidé que la route par défaut redirige vers Swagger, pour aller plus vite
-    @GetMapping("/")
+    @GetMapping("")
     public String redirectToSwagger() {
         return "redirect:/swagger-ui/index.html";
     }

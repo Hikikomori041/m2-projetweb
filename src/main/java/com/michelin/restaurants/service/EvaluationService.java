@@ -7,6 +7,7 @@ import com.michelin.restaurants.repository.EvaluationRepository;
 import com.michelin.restaurants.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,14 +26,17 @@ public class EvaluationService {
         this.restaurantRepository = restaurantRepository;
     }
 
-    public EvaluationEntity addEvaluation(EvaluationDto evaluationDto) {
+    public EvaluationEntity addEvaluation(EvaluationDto evaluationDto, String author) {
         RestaurantEntity restaurantEntity = this.restaurantRepository.findById(evaluationDto.restaurantId())
                 .orElseThrow( () -> new NoSuchElementException("Le restaurant avec l'id " + evaluationDto.restaurantId() + " n'a pas été trouvé."));
 
-        return this.evaluationRepository.save(EvaluationEntity.buildFromDto(evaluationDto, restaurantEntity));
+        EvaluationEntity evaluationEntity = EvaluationEntity.buildFromDto(evaluationDto, restaurantEntity);
+        evaluationEntity.setAuthor(author); // On définit l'auteur de l'évaluation
+
+        return this.evaluationRepository.save(evaluationEntity);
     }
 
-    public EvaluationDto deleteEvaluation(Long id) {
+    public EvaluationDto deleteEvaluation(Long id, String author) {
         if(!this.evaluationRepository.existsById(id)) {
             throw new NoSuchElementException("L'évaluation avec l'identifiant '" + id + "' n'existe pas !");
         }
@@ -40,9 +44,12 @@ public class EvaluationService {
         //todo: supprimer les photos
 
         EvaluationEntity evaluationEntity = this.evaluationRepository.findById(id).get();
-        this.evaluationRepository.deleteById(id);
-
-        return EvaluationDto.buildFromEntity(evaluationEntity);
+        if (evaluationEntity.getAuthor().equals(author)) {
+            this.evaluationRepository.deleteById(id);
+            return EvaluationDto.buildFromEntity(evaluationEntity);
+        }
+        //else
+        throw new AccessDeniedException("Vous ne pouvez supprimer que vos propres évaluations !");
     }
 
     public List<EvaluationDto> getEvaluationsByKeywords(List<String> keywords) {
@@ -58,5 +65,9 @@ public class EvaluationService {
             throw new NoSuchElementException("Le restaurant avec l'identifiant '" + restaurantId + "' n'existe pas");
         }
         return this.evaluationRepository.findAllByRestaurantId(restaurantId);
+    }
+
+    public List<EvaluationEntity> getEvaluationsByAuthor(String author) {
+        return this.evaluationRepository.findAllByAuthor(author);
     }
 }

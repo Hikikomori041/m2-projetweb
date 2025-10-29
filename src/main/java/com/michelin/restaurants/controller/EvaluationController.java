@@ -1,16 +1,20 @@
 package com.michelin.restaurants.controller;
 
 import com.michelin.restaurants.dto.EvaluationDto;
-import com.michelin.restaurants.dto.RestaurantDto;
 import com.michelin.restaurants.service.EvaluationService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/evaluation")
+@Slf4j
 public class EvaluationController {
     private final EvaluationService evaluationService;
 
@@ -19,17 +23,21 @@ public class EvaluationController {
     }
 
     // Ajoute une évaluation sur un restaurant
+    @PreAuthorize("isAuthenticated()")
     @PostMapping()
     @Operation(summary = "Ajoute une évaluation sur un restaurant")
-    public EvaluationDto addEvaluation(@Valid @RequestBody EvaluationDto evaluationDto) {
-        return EvaluationDto.buildFromEntity(this.evaluationService.addEvaluation(evaluationDto));
+    public EvaluationDto addEvaluation(@Valid @RequestBody EvaluationDto evaluationDto, @AuthenticationPrincipal Jwt jwt) {
+        String author = jwt.getClaimAsString("name");
+        return EvaluationDto.buildFromEntity(this.evaluationService.addEvaluation(evaluationDto, author));
     }
 
     // Supprime une évaluation
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
     @Operation(summary = "Supprime une évaluation")
-    public EvaluationDto deleteEvaluation(@PathVariable Long id) {
-        return this.evaluationService.deleteEvaluation(id);
+    public EvaluationDto deleteEvaluation(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String author = jwt.getClaimAsString("name");
+        return this.evaluationService.deleteEvaluation(id, author);
     }
 
     // Récupère les évaluations en fonction d'un (ou plusieurs) mots-clés
@@ -39,10 +47,22 @@ public class EvaluationController {
         return evaluationService.getEvaluationsByKeywords(keywords);
     }
 
+    // L'utilisateur connecté récupère ses propres évaluations
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/my-evaluations")
+    @Operation(summary = "L'utilisateur connecté récupère ses propres évaluations")
+    public List<EvaluationDto> getMyEvaluations(@AuthenticationPrincipal Jwt jwt) {
+        String author = jwt.getClaimAsString("name");
+        return this.evaluationService.getEvaluationsByAuthor(author)
+                .stream()
+                .map(EvaluationDto::buildFromEntity)
+                .toList();
+    }
 
-    // Route test
+
+    // Route non demandée, mais utile pour tester
     @GetMapping("/{restaurantId}")
-    @Operation(summary = "Récupère tous les évaluations d'un restaurant, par son identifiant")
+    @Operation(summary = "Route non demandée: récupère tous les évaluations d'un restaurant, par son identifiant")
     public List<EvaluationDto> getEvaluationsByRestaurantId(@PathVariable Long restaurantId) {
         return this.evaluationService.getEvaluationsByRestaurantId(restaurantId)
                 .stream()

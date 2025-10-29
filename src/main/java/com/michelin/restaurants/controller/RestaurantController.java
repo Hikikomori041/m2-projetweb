@@ -4,7 +4,13 @@ import com.michelin.restaurants.dto.EditRestaurantDto;
 import com.michelin.restaurants.dto.FullRestaurantDto;
 import com.michelin.restaurants.dto.RestaurantDto;
 import com.michelin.restaurants.service.RestaurantService;
+import com.michelin.restaurants.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,9 +19,12 @@ import java.util.List;
 @RequestMapping("/restaurant")
 public class RestaurantController {
     private final RestaurantService restaurantService;
+    private final UserService userService;
 
-    public RestaurantController(RestaurantService restaurantService) {
+    @Autowired
+    public RestaurantController(RestaurantService restaurantService, UserService userService) {
         this.restaurantService = restaurantService;
+        this.userService = userService;
     }
 
     // Récupère tous les restaurants
@@ -31,14 +40,23 @@ public class RestaurantController {
     }
 
     // Crée un restaurant
+    @PreAuthorize("isAuthenticated()")
     @PostMapping()
-    public RestaurantDto addRestaurant(@Valid @RequestBody RestaurantDto restaurantDto) {
+    public RestaurantDto addRestaurant(@Valid @RequestBody RestaurantDto restaurantDto, @AuthenticationPrincipal Jwt jwt) {
+        if (!this.userService.isAdmin(jwt)) {
+            throw new AccessDeniedException("Vous devez être administrateur pour faire ajouter un restaurant !");
+        }
+
         return RestaurantDto.buildFromEntity(this.restaurantService.addRestaurant(restaurantDto));
     }
 
     // Met à jour le nom et l'adresse d'un restaurant
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
-    public RestaurantDto updateRestaurant(@PathVariable("id") Long id, @RequestBody EditRestaurantDto editRestaurantDto) {
+    public RestaurantDto updateRestaurant(@PathVariable("id") Long id, @RequestBody EditRestaurantDto editRestaurantDto, @AuthenticationPrincipal Jwt jwt) {
+        if (!this.userService.isAdmin(jwt)) {
+            throw new AccessDeniedException("Vous devez être administrateur pour modifier un restaurant !");
+        }
         return RestaurantDto.buildFromEntity(this.restaurantService.updateRestaurant(id, editRestaurantDto));
     }
 }
