@@ -24,8 +24,10 @@ public class RestaurantEntity {
     @Column(name = "imageUrl")
     private String imageUrl;
 
+
     @OneToMany(mappedBy = "restaurant")
     private List<EvaluationEntity> evaluations;
+
 
     public static RestaurantEntity buildFromDto(RestaurantDto restaurantDto) {
         var restaurantEntity = new RestaurantEntity();

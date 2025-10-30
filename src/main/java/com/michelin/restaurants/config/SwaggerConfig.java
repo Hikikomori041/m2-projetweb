@@ -15,28 +15,28 @@ public class SwaggerConfig {
     @Bean
     GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
-                .group("public-api")
-                .pathsToMatch("/**")
-                .build();
+            .group("public-api")
+            .pathsToMatch("/**")
+            .build();
     }
 
 
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Nouvelle API des restaurants Michelin")
-                        .description("Cette nouvelle API permet de retrouver vos restaurants favoris et d'y laisser des évaluations !")
-                        .version("1.0")
-                )
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-                .components(
-                        new Components()
-                                .addSecuritySchemes("bearerAuth", new SecurityScheme()
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")
-                                )
-                );
+            .info(new Info()
+                .title("Nouvelle API des restaurants Michelin")
+                .description("Cette nouvelle API permet de retrouver vos restaurants favoris et d'y laisser des évaluations !")
+                .version("1.0")
+            )
+            .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+            .components(
+                new Components()
+                    .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                    )
+            );
     }
 }

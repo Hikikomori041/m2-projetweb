@@ -7,12 +7,9 @@ import com.michelin.restaurants.repository.EvaluationRepository;
 import com.michelin.restaurants.repository.RestaurantRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -30,7 +27,7 @@ public class EvaluationService {
         this.evaluationIndexService = evaluationIndexService;
     }
 
-    // Pour rebuild l'index avec les évaluations déjà ajoutées avant l'index, au démarrage de l'application
+//    // Pour rebuild l'index avec les évaluations déjà ajoutées avant l'index, au démarrage de l'application
 //    @PostConstruct
 //    public void rebuildIndexAtStartup() {
 //        List<EvaluationEntity> all = evaluationRepository.findAll();

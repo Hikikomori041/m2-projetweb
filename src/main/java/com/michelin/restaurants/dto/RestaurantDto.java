@@ -11,19 +11,9 @@ public record RestaurantDto(
 ) {
     public static RestaurantDto buildFromEntity(RestaurantEntity restaurantEntity) {
         return new RestaurantDto(
-                restaurantEntity.getName(),
-                restaurantEntity.getAddress(),
-                restaurantEntity.getImageUrl()
+            restaurantEntity.getName(),
+            restaurantEntity.getAddress(),
+            restaurantEntity.getImageUrl()
         );
     }
 }
-
-/*
-Un restaurant est caractérisé par :
-
-- un identifiant unique (un nombre entier positif)
-- un nom (longueur max de 90 caractères)
-- une adresse (longueur max de 255 caractères)
-- une liste d'évaluations
-- une image présentant le restaurant
-*/

@@ -1,12 +1,9 @@
 package com.michelin.restaurants.service;
 
 import com.michelin.restaurants.dto.EditRestaurantDto;
-import com.michelin.restaurants.dto.EvaluationDto;
 import com.michelin.restaurants.dto.FullRestaurantDto;
 import com.michelin.restaurants.dto.RestaurantDto;
-import com.michelin.restaurants.entity.EvaluationEntity;
 import com.michelin.restaurants.entity.RestaurantEntity;
-import com.michelin.restaurants.repository.EvaluationRepository;
 import com.michelin.restaurants.repository.RestaurantRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,10 +13,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

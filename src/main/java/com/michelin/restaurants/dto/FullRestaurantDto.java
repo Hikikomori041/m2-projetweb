@@ -9,6 +9,5 @@ public record FullRestaurantDto(
 
 /* Notes
 
-Le but de ce record Dto est de permettre de renvoyer un restaurant avec sa moyenne calculée dans un service.
-
+Le but de ce record est de permettre de renvoyer un restaurant avec sa moyenne calculée dans un service.
  */

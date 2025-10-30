@@ -6,10 +6,8 @@ import com.michelin.restaurants.dto.RestaurantDto;
 import com.michelin.restaurants.entity.EvaluationEntity;
 import com.michelin.restaurants.entity.RestaurantEntity;
 import com.michelin.restaurants.repository.RestaurantRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;

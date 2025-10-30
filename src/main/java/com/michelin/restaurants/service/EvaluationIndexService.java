@@ -96,6 +96,7 @@ public class EvaluationIndexService {
         }
     }
 
+    // Pour supprimer l'index de l'évaluation (à sa suppression)
     public void deleteEvaluation(String id) {
         try {
             indexWriter.deleteDocuments(new Term("id", id));

@@ -20,3 +20,8 @@ public class UserService {
         return clientRoles.contains("ADMIN");
     }
 }
+
+/* Note
+
+Ce fichier contient les fonctions liées aux utilisateurs (bon ici, il n'y a qu'un test pour savoir s'il est admin).
+ */

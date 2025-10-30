@@ -77,17 +77,3 @@ public class EvaluationController {
     }
 
 }
-
-
-/*
-Evaluations
-- La possibilité d'ajouter une évaluation sur un restaurant
-- La possibilité de supprimer une évaluation
-- La possibilité de récupérer les évaluations en fonction d'un (ou plusieurs) mots-clés
-- La possibilité pour un utilisateur de récupérer toutes les évaluations qu'il a lui-même créées.
-
-Les cas d'erreur doivent être gérés pour retourner une erreur (404, 500, etc) contenant :
-- Un code
-- Un message expliquant l'erreur
-
-*/

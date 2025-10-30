@@ -26,13 +26,3 @@ public record EvaluationDto(
         );
     }
 }
-
-/*
-Une évaluation est caractérisée par :
-
-- Un identifiant unique (un nombre entier positif)
-- Le nom de l'évaluateur (longueur max de 50 caractères)
-- Le commentaire (longueur max de 255 caractères)
-- Le nombre d'étoiles recommandé (0, 1, 2 ou 3) appellée "note"
-- Une ou plusieurs photo des plats
- */
