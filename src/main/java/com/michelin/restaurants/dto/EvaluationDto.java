@@ -11,14 +11,12 @@ import java.util.List;
 
 public record EvaluationDto(
     @NotNull Long restaurantId,
-    @Length(max = 50) String author,
     @NotBlank @Length(max = 255) String comment,
     @NotNull @Min(0) @Max(3) Integer note
 ) {
     public static EvaluationDto buildFromEntity(EvaluationEntity evaluationEntity) {
         return new EvaluationDto(
             evaluationEntity.getRestaurant().getId(),
-            evaluationEntity.getAuthor(),
             evaluationEntity.getComment(),
             evaluationEntity.getNote()
         );

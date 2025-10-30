@@ -8,7 +8,6 @@ import com.michelin.restaurants.entity.RestaurantEntity;
 import com.michelin.restaurants.repository.RestaurantRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -52,7 +51,13 @@ public class RestaurantService {
 
     // Ajoute un restaurant (Administrateur seulement)
     public RestaurantEntity addRestaurant(RestaurantDto restaurantDto, boolean isAdmin) {
+        // Messages d'erreurs
         if (!isAdmin) throw new AccessDeniedException("Vous devez être administrateur pour ajouter un restaurant !");
+
+        if (restaurantDto.name().length() > 90)
+            throw new RuntimeException("Erreur: le nom du restaurant ne doit pas faire plus de 90 caractères.");
+        if (restaurantDto.address().length() > 255 )
+            throw new RuntimeException("Erreur: l'adresse du restaurant ne doit pas faire plus de 255 caractères.");
 
         return this.restaurantRepository.save(RestaurantEntity.buildFromDto(restaurantDto));
     }
@@ -74,8 +79,15 @@ public class RestaurantService {
 
     // Met à jour le nom et l'adresse d'un restaurant (Administrateur seulement)
     public RestaurantEntity updateRestaurant(Long id, RestaurantDto restaurantDto, boolean isAdmin) {
+
+        // Messages d'erreurs
         if (!isAdmin) throw new AccessDeniedException("Vous devez être administrateur pour modifier un restaurant !");
         if(!this.restaurantRepository.existsById(id)) throw new NoSuchElementException("Le restaurant avec l'identifiant '" + id + "' n'existe pas");
+
+        if (restaurantDto.name().length() > 90)
+            throw new RuntimeException("Erreur: le nom du restaurant ne doit pas faire plus de 90 caractères.");
+        if (restaurantDto.address().length() > 255 )
+            throw new RuntimeException("Erreur: l'adresse du restaurant ne doit pas faire plus de 255 caractères.");
 
         RestaurantEntity restaurantEntity = this.getRestaurantById(id);
         restaurantEntity.setName(restaurantDto.name());

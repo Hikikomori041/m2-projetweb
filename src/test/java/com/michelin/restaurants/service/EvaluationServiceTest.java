@@ -41,11 +41,11 @@ class EvaluationServiceTest {
     @Test
     void addEvaluation_shouldSaveEvaluationWithAuthor() {
         // --- given ---
-        final String author = "Nicolas";
+        final String author = "Nico";
         RestaurantEntity restaurant = new RestaurantEntity();
         restaurant.setId(1L);
 
-        EvaluationDto dto = new EvaluationDto(1L, author, "Très bon !", 3);
+        EvaluationDto dto = new EvaluationDto(1L, "Très bon !", 3);
 
         when(restaurantRepository.findById(1L)).thenReturn(Optional.of(restaurant));
 
@@ -68,7 +68,7 @@ class EvaluationServiceTest {
     void addEvaluation_shouldThrowIfRestaurantNotFound() {
         // --- given ---
         final String author = "Nico";
-        EvaluationDto dto = new EvaluationDto(1L, author, "Très bon !", 3);
+        EvaluationDto dto = new EvaluationDto(1L, "Très bon !", 3);
         when(restaurantRepository.findById(1L)).thenReturn(Optional.empty());
 
         // --- expect ---
@@ -106,7 +106,7 @@ class EvaluationServiceTest {
         // given
         EvaluationEntity entity = new EvaluationEntity();
         entity.setId(2L);
-        entity.setAuthor("AutreUser");
+        entity.setAuthor("Alex");
 
         when(evaluationRepository.existsById(2L)).thenReturn(true);
         when(evaluationRepository.findById(2L)).thenReturn(Optional.of(entity));
@@ -162,8 +162,8 @@ class EvaluationServiceTest {
         resto.setId(1L);
         resto.setName("Au boudin moment");
 
-        EvaluationDto dto1 = new EvaluationDto(1L, author, "Super resto", 3);
-        EvaluationDto dto2 = new EvaluationDto(1L, author, "À éviter", 0);
+        EvaluationDto dto1 = new EvaluationDto(1L, "Super resto", 3);
+        EvaluationDto dto2 = new EvaluationDto(1L, "À éviter", 0);
 
         EvaluationEntity e1 = EvaluationEntity.buildFromDto(dto1, resto);
         EvaluationEntity e2 = EvaluationEntity.buildFromDto(dto2, resto);

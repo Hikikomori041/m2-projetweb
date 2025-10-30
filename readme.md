@@ -4,8 +4,18 @@ Projet de cours de 2025 de Service Web du Master 2 Informatique, à la Faculté 
 # Auteur
 Nicolas BLACHÈRE
 
+# Notes
+Pour la gestion des images (restaurant et évaluations), j'ai créé des routes spécifiques, je n'ai pas permis l'ajout d'image dans le même formulaire que la création de restaurant / évaluation, car trop compliqué.
+
 # Explication de l'arborescence de fichiers
 ## `main/...`
+
+### `/client`
+#### `EvaluationMinioClient`
+Un client MinIO pour gérer les photos de plats des évaluations.
+#### `RestaurantMinioClient`
+Un client MinIO pour gérer les images de restaurants.
+
 ### `/config`
 #### `SecurityConfig`
 Fichier essentiel aux connections oauth2.
@@ -59,7 +69,9 @@ Ne sert qu'à identifier si un utilisateur connecté possède le rôle administr
 ### `/resources`
 #### `/static/favicon.ico`
 Je me suis fait plaisir en mettant une icône de Michelin pour le RP (:
+
 ## `test/...`
+
 #### `EvaluationServiceTest`
 Fichier contenant les tests unitaires concernant les actions effectuées sur les évaluations.
 #### `RestaurantServiceTest`

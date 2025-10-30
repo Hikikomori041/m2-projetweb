@@ -51,6 +51,15 @@ public class EvaluationService {
         RestaurantEntity restaurantEntity = this.restaurantRepository.findById(evaluationDto.restaurantId())
                 .orElseThrow( () -> new NoSuchElementException("Le restaurant avec l'id " + evaluationDto.restaurantId() + " n'a pas été trouvé."));
 
+        // Messages d'erreurs
+        if (author.length() > 50)
+            throw new RuntimeException("Erreur: le nom de l'auteur de l'évaluation ne doit pas faire plus de 50 caractères.");
+        if (evaluationDto.comment().length() > 255 )
+            throw new RuntimeException("Erreur: le commentaire de l'évaluation ne doit pas faire plus de 255 caractères.");
+        if (evaluationDto.note() > 3 || evaluationDto.note() < 0 )
+            throw new RuntimeException("Erreur: la note de l'évaluation doit être un entier compris entre 0 et 3.");
+
+
         EvaluationEntity evaluationEntity = EvaluationEntity.buildFromDto(evaluationDto, restaurantEntity);
         evaluationEntity.setAuthor(author); // On définit l'auteur de l'évaluation
 
@@ -76,10 +85,12 @@ public class EvaluationService {
 
             // On supprime les photos
             List<Long> photosIds = evaluationEntity.getPhotosIds(); // on récupère la liste des id de photos
-            for(Long photoId : photosIds) {
-                String photoName = "blachere.evaluation_" + evaluationEntity.getId() + "_photo_" + photoId; // On récupère le nom de l'image uploadée
-                // Ensuite, on supprime ladite image
-                this.deleteEvaluationPhoto(photoName);
+            if (photosIds != null && !photosIds.isEmpty()) {
+                for(Long photoId : photosIds) {
+                    String photoName = "blachere.evaluation_" + evaluationEntity.getId() + "_photo_" + photoId; // On récupère le nom de l'image uploadée
+                    // Ensuite, on supprime ladite image
+                    this.deleteEvaluationPhoto(photoName);
+                }
             }
 
             return evaluationEntity;
@@ -118,6 +129,9 @@ public class EvaluationService {
     }
 
     public List<String> getAllEvaluationPhotos(Long evaluationId) {
+        if(!this.evaluationRepository.existsById(evaluationId)) {
+            throw new NoSuchElementException("L'évaluation avec l'identifiant '" + evaluationId + "' n'existe pas !");
+        }
         EvaluationEntity evaluationEntity = this.evaluationRepository.findById(evaluationId).get();
         List<Long> photosIds = evaluationEntity.getPhotosIds();
         List<String> photoUrls = new ArrayList<>();

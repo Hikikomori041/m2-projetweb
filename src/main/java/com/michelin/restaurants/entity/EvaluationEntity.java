@@ -35,7 +35,6 @@ public class EvaluationEntity {
     public static EvaluationEntity buildFromDto(EvaluationDto evaluationDto, RestaurantEntity restaurantEntity) {
         var evaluationEntity = new EvaluationEntity();
 
-        evaluationEntity.setAuthor(evaluationDto.author());
         evaluationEntity.setComment(evaluationDto.comment());
         evaluationEntity.setNote(evaluationDto.note());
         evaluationEntity.setRestaurant(restaurantEntity);
