@@ -24,7 +24,7 @@ public class EvaluationEntity {
     private Integer note;
 
     @Column(name = "photos")
-    private List<String> photosUrls;
+    private List<Long> photosIds;
 
 
     @ManyToOne
@@ -38,7 +38,6 @@ public class EvaluationEntity {
         evaluationEntity.setAuthor(evaluationDto.author());
         evaluationEntity.setComment(evaluationDto.comment());
         evaluationEntity.setNote(evaluationDto.note());
-        evaluationEntity.setPhotosUrls(evaluationDto.photosUrls());
         evaluationEntity.setRestaurant(restaurantEntity);
 
         return evaluationEntity;

@@ -1,6 +1,5 @@
 package com.michelin.restaurants.service;
 
-import com.michelin.restaurants.dto.EditRestaurantDto;
 import com.michelin.restaurants.dto.FullRestaurantDto;
 import com.michelin.restaurants.dto.RestaurantDto;
 import com.michelin.restaurants.entity.RestaurantEntity;
@@ -145,7 +144,7 @@ class RestaurantServiceTest {
     @Test
     void addRestaurant_shouldSaveWhenAdmin() {
         // given
-        RestaurantDto dto = new RestaurantDto("Chez Mario", "1 rue du Four", "image.jpg");
+        RestaurantDto dto = new RestaurantDto("Chez Mario", "1 rue du Four");
         RestaurantEntity entity = RestaurantEntity.buildFromDto(dto);
 
         when(restaurantRepository.save(any(RestaurantEntity.class))).thenReturn(entity);
@@ -162,7 +161,7 @@ class RestaurantServiceTest {
     @Test
     void addRestaurant_shouldThrowWhenNotAdmin() {
         // given
-        RestaurantDto dto = new RestaurantDto("Chez Luigi", "2 rue des Pâtes", "photo.png");
+        RestaurantDto dto = new RestaurantDto("Chez Luigi", "2 rue des Pâtes");
 
         // then
         assertThrows(AccessDeniedException.class, () ->
@@ -179,7 +178,7 @@ class RestaurantServiceTest {
     void updateRestaurant_shouldUpdateWhenAdminAndExists() {
         // given
         Long id = 1L;
-        EditRestaurantDto editDto = new EditRestaurantDto("Chez Mario Deluxe", "42 rue des Pâtes");
+        RestaurantDto editDto = new RestaurantDto("Chez Mario Deluxe", "42 rue des Pâtes");
 
         RestaurantEntity existing = new RestaurantEntity();
         existing.setId(id);
@@ -204,7 +203,7 @@ class RestaurantServiceTest {
     @Test
     void updateRestaurant_shouldThrowWhenNotAdmin() {
         // given
-        EditRestaurantDto editDto = new EditRestaurantDto("Chez Luigi", "2 rue des Raviolis");
+        RestaurantDto editDto = new RestaurantDto("Chez Luigi", "2 rue des Raviolis");
 
         // then
         assertThrows(AccessDeniedException.class, () ->
@@ -219,7 +218,7 @@ class RestaurantServiceTest {
     void updateRestaurant_shouldThrowWhenRestaurantNotFound() {
         // given
         Long id = 99L;
-        EditRestaurantDto editDto = new EditRestaurantDto("Chez Fantôme", "Aucune adresse");
+        RestaurantDto editDto = new RestaurantDto("Chez Fantôme", "Aucune adresse");
 
         when(restaurantRepository.existsById(id)).thenReturn(false);
 

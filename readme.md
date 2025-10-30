@@ -27,8 +27,6 @@ Les routes concernant les évaluations.
 Les routes concernant les restaurants.
 
 ### `/dto`
-#### `EditRestaurantDto`
-Pour passer le nouveau nom et la nouvelle adresse d'un restaurant à modifier.
 #### `EvaluationDto`
 Les informations sur une évaluation qui est retournée par certaines routes d'évaluations.
 #### `FullRestaurantDto`

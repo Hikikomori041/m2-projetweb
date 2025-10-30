@@ -7,10 +7,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -63,6 +65,22 @@ public class EvaluationController {
                 .stream()
                 .map(EvaluationDto::buildFromEntity)
                 .toList();
+    }
+
+    // L'utilisateur connecté envoie une photo ou plusieurs pour son évaluation
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping(path = "/{id}/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Envoie une ou plusieurs photos de plats (Utilisateur connecté)")
+    public List<String> uploadPhotos(@PathVariable Long id, @RequestPart("photos") List<MultipartFile> photos, @AuthenticationPrincipal Jwt jwt) {
+        String author = jwt.getClaimAsString("name");
+        return this.evaluationService.addPhotos(id, photos, author);
+    }
+
+    // Pour récupérer des urls vers les photos d'une évaluation
+    @GetMapping(path = "/{id}/photos")
+    @Operation(summary = "Récupère les potentielles photos de plats")
+    public List<String> getPhotos(@PathVariable Long id) {
+        return this.evaluationService.getAllEvaluationPhotos(id);
     }
 
 

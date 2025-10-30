@@ -21,9 +21,6 @@ public class RestaurantEntity {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "imageUrl")
-    private String imageUrl;
-
 
     @OneToMany(mappedBy = "restaurant")
     private List<EvaluationEntity> evaluations;
@@ -34,7 +31,6 @@ public class RestaurantEntity {
 
         restaurantEntity.setName(restaurantDto.name());
         restaurantEntity.setAddress(restaurantDto.address());
-        restaurantEntity.setImageUrl(restaurantDto.imageUrl());
 
         return restaurantEntity;
     }
