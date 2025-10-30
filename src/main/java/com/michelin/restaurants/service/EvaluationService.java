@@ -5,6 +5,7 @@ import com.michelin.restaurants.entity.EvaluationEntity;
 import com.michelin.restaurants.entity.RestaurantEntity;
 import com.michelin.restaurants.repository.EvaluationRepository;
 import com.michelin.restaurants.repository.RestaurantRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,12 +21,26 @@ public class EvaluationService {
     private final EvaluationRepository evaluationRepository;
     private final RestaurantRepository restaurantRepository;
 
+    private final EvaluationIndexService evaluationIndexService;
+
     @Autowired
-    public EvaluationService(EvaluationRepository evaluationRepository, RestaurantRepository restaurantRepository) {
+    public EvaluationService(EvaluationRepository evaluationRepository, RestaurantRepository restaurantRepository, EvaluationIndexService evaluationIndexService) {
         this.evaluationRepository = evaluationRepository;
         this.restaurantRepository = restaurantRepository;
+        this.evaluationIndexService = evaluationIndexService;
     }
 
+    // Pour rebuild l'index avec les évaluations déjà ajoutées avant l'index, au démarrage de l'application
+//    @PostConstruct
+//    public void rebuildIndexAtStartup() {
+//        List<EvaluationEntity> all = evaluationRepository.findAll();
+//        for (EvaluationEntity e : all) {
+//            evaluationIndexService.indexEvaluation(e.getId().toString(), e.getComment());
+//        }
+//    }
+
+
+    // Ajoute une évaluation avec comme auteur le nom de l'utilisateur connecté
     public EvaluationEntity addEvaluation(EvaluationDto evaluationDto, String author) {
         RestaurantEntity restaurantEntity = this.restaurantRepository.findById(evaluationDto.restaurantId())
                 .orElseThrow( () -> new NoSuchElementException("Le restaurant avec l'id " + evaluationDto.restaurantId() + " n'a pas été trouvé."));
@@ -33,41 +48,58 @@ public class EvaluationService {
         EvaluationEntity evaluationEntity = EvaluationEntity.buildFromDto(evaluationDto, restaurantEntity);
         evaluationEntity.setAuthor(author); // On définit l'auteur de l'évaluation
 
-        return this.evaluationRepository.save(evaluationEntity);
+        EvaluationEntity savedEvaluation = this.evaluationRepository.save(evaluationEntity);
+        // Indexation après sauvegarde
+        this.evaluationIndexService.indexEvaluation(savedEvaluation.getId().toString(), savedEvaluation.getComment());
+
+        return savedEvaluation;
     }
 
-    public EvaluationDto deleteEvaluation(Long id, String author) {
+    // Supprime une évaluation via son id, si l'utilisateur connecté en est l'auteur ou est un admin
+    public EvaluationEntity deleteEvaluation(Long id, String author, boolean isAdmin) {
         if(!this.evaluationRepository.existsById(id)) {
             throw new NoSuchElementException("L'évaluation avec l'identifiant '" + id + "' n'existe pas !");
         }
 
-        //todo: supprimer les photos
+        //todo: supprimer les photos (si on fait des uploads, utiliser les routes DELETE)
 
         EvaluationEntity evaluationEntity = this.evaluationRepository.findById(id).get();
-        if (evaluationEntity.getAuthor().equals(author)) {
+        if (evaluationEntity.getAuthor().equals(author) || isAdmin) {
             this.evaluationRepository.deleteById(id);
-            return EvaluationDto.buildFromEntity(evaluationEntity);
+            // Suppression de l’index correspondant
+            this.evaluationIndexService.deleteEvaluation(id.toString());
+            return evaluationEntity;
         }
         //else
         throw new AccessDeniedException("Vous ne pouvez supprimer que vos propres évaluations !");
     }
 
+    // Retourne la liste des évaluations contenant tel ou tel mot-clé (via les index)
     public List<EvaluationDto> getEvaluationsByKeywords(List<String> keywords) {
-        List<EvaluationDto> evaluations = new ArrayList<>();
+        String searchText = String.join(" ", keywords);
+        List<String> matchingIds = this.evaluationIndexService.searchEvaluation(searchText);
 
-        //todo: récupérer la liste des évaluations par mots-clés (index ?)
+        // Petite conversion d'une liste de String à une liste de Long
+        List<Long> evaluationsIds = matchingIds.stream()
+                .map(Long::valueOf)
+                .toList();
 
-        return evaluations;
+        List<EvaluationEntity> entities = this.evaluationRepository.findAllById(evaluationsIds);
+        return entities.stream()
+                .map(EvaluationDto::buildFromEntity)
+                .toList();
     }
 
+    // Retourne la liste des évaluations faites par un auteur (via son nom)
+    public List<EvaluationEntity> getEvaluationsByAuthor(String author) {
+        return this.evaluationRepository.findAllByAuthor(author);
+    }
+
+    // Fonction non demandée, ajout personnel
     public List<EvaluationEntity> getEvaluationsByRestaurantId(Long restaurantId) {
         if(!this.restaurantRepository.existsById(restaurantId)) {
             throw new NoSuchElementException("Le restaurant avec l'identifiant '" + restaurantId + "' n'existe pas");
         }
         return this.evaluationRepository.findAllByRestaurantId(restaurantId);
-    }
-
-    public List<EvaluationEntity> getEvaluationsByAuthor(String author) {
-        return this.evaluationRepository.findAllByAuthor(author);
     }
 }

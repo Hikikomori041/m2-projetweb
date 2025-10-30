@@ -5,7 +5,10 @@ import com.michelin.restaurants.dto.FullRestaurantDto;
 import com.michelin.restaurants.dto.RestaurantDto;
 import com.michelin.restaurants.service.RestaurantService;
 import com.michelin.restaurants.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,8 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Restaurants", description = "Endpoints pour la gestion des restaurants")
 @RestController
 @RequestMapping("/restaurant")
+@Slf4j
 public class RestaurantController {
     private final RestaurantService restaurantService;
     private final UserService userService;
@@ -29,12 +34,14 @@ public class RestaurantController {
 
     // Récupère tous les restaurants
     @GetMapping()
+    @Operation(summary = "Récupère tous les restaurants")
     public List<FullRestaurantDto> getAllFullRestaurants() {
         return this.restaurantService.getAllFullRestaurants();
     }
 
     // Récupère un restaurant en particulier, avec sa moyenne d'évaluations
     @GetMapping("/{id}")
+    @Operation(summary = "Récupère un restaurant via son identifiant, avec sa moyenne d'évaluations (-1 si aucune)")
     public FullRestaurantDto getFullRestaurantById(@PathVariable("id") Long id) {
         return this.restaurantService.getFullRestaurantById(id);
     }
@@ -42,36 +49,23 @@ public class RestaurantController {
     // Crée un restaurant
     @PreAuthorize("isAuthenticated()")
     @PostMapping()
+    @Operation(summary = "Créer un restaurant (Administrateur seulement)")
     public RestaurantDto addRestaurant(@Valid @RequestBody RestaurantDto restaurantDto, @AuthenticationPrincipal Jwt jwt) {
-        if (!this.userService.isAdmin(jwt)) {
-            throw new AccessDeniedException("Vous devez être administrateur pour faire ajouter un restaurant !");
-        }
-
-        return RestaurantDto.buildFromEntity(this.restaurantService.addRestaurant(restaurantDto));
+        return RestaurantDto.buildFromEntity(this.restaurantService.addRestaurant(restaurantDto, this.userService.isAdmin(jwt)));
     }
 
     // Met à jour le nom et l'adresse d'un restaurant
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
+    @Operation(summary = "Met à jour le nom et l'adresse d'un restaurant (Administrateur seulement)")
     public RestaurantDto updateRestaurant(@PathVariable("id") Long id, @RequestBody EditRestaurantDto editRestaurantDto, @AuthenticationPrincipal Jwt jwt) {
-        if (!this.userService.isAdmin(jwt)) {
-            throw new AccessDeniedException("Vous devez être administrateur pour modifier un restaurant !");
-        }
-        return RestaurantDto.buildFromEntity(this.restaurantService.updateRestaurant(id, editRestaurantDto));
+        return RestaurantDto.buildFromEntity(this.restaurantService.updateRestaurant(id, editRestaurantDto, this.userService.isAdmin(jwt)));
     }
 }
 
 
-/*
-- La possibilité de récupérer tous les restaurants*
-- La possibilité de récupérer un restaurant en particulier*
-- La possibilité de créer un restaurant*
-- La possibilité de mettre à jour le nom et l'adresse d'un restaurant
+/* Notes
 
-Les routes retournant un (ou plusieurs) restaurant (marquées par *) doivent aussi retourner la moyenne des notes du-dit restaurant dans une propriété nommée "moyenne". Si le restaurant ne dispose d'aucune evaluation, la moyenne est de -1.
-
-Les cas d'erreur doivent être gérés pour retourner une erreur (404, 500, etc) contenant
-- Un code
-- Un message expliquant l'erreur.
-
+    J'ai pensé d'abord mettre les throw AccessDeniedException ici (si l'utilisateur connecté n'est pas un admin),
+    mais je me suis dit que pour les tests unitaires, c'est mieux de faire cette vérification dans RestaurantService.
 */

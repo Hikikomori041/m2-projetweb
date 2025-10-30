@@ -2,7 +2,9 @@ package com.michelin.restaurants.controller;
 
 import com.michelin.restaurants.dto.EvaluationDto;
 import com.michelin.restaurants.service.EvaluationService;
+import com.michelin.restaurants.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,20 +14,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Évaluations", description = "Endpoints pour la gestion des évaluations")
 @RestController
 @RequestMapping("/evaluation")
 @Slf4j
 public class EvaluationController {
     private final EvaluationService evaluationService;
+    private final UserService userService;
 
-    public EvaluationController(EvaluationService evaluationService) {
+    public EvaluationController(EvaluationService evaluationService, UserService userService) {
         this.evaluationService = evaluationService;
+        this.userService = userService;
     }
 
     // Ajoute une évaluation sur un restaurant
     @PreAuthorize("isAuthenticated()")
     @PostMapping()
-    @Operation(summary = "Ajoute une évaluation sur un restaurant")
+    @Operation(summary = "Ajoute une évaluation sur un restaurant (Utilisateur connecté)")
     public EvaluationDto addEvaluation(@Valid @RequestBody EvaluationDto evaluationDto, @AuthenticationPrincipal Jwt jwt) {
         String author = jwt.getClaimAsString("name");
         return EvaluationDto.buildFromEntity(this.evaluationService.addEvaluation(evaluationDto, author));
@@ -34,15 +39,16 @@ public class EvaluationController {
     // Supprime une évaluation
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprime une évaluation")
+    @Operation(summary = "Supprime une évaluation (Utilisateur connecté ou Administrateur)")
     public EvaluationDto deleteEvaluation(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
         String author = jwt.getClaimAsString("name");
-        return this.evaluationService.deleteEvaluation(id, author);
+        boolean isAdmin = this.userService.isAdmin(jwt);
+        return EvaluationDto.buildFromEntity(this.evaluationService.deleteEvaluation(id, author, isAdmin));
     }
 
     // Récupère les évaluations en fonction d'un (ou plusieurs) mots-clés
     @PostMapping("/search")
-    @Operation(summary = "Récupère en fonction d'un (ou plusieurs) mots-clés")
+    @Operation(summary = "Récupère les évaluations en fonction d'un (ou plusieurs) mots-clés")
     public List<EvaluationDto> getEvaluationsByKeywords(@RequestBody List<String> keywords) {
         return evaluationService.getEvaluationsByKeywords(keywords);
     }
@@ -50,7 +56,7 @@ public class EvaluationController {
     // L'utilisateur connecté récupère ses propres évaluations
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/my-evaluations")
-    @Operation(summary = "L'utilisateur connecté récupère ses propres évaluations")
+    @Operation(summary = "Récupère ses propres évaluations (Utilisateur connecté)")
     public List<EvaluationDto> getMyEvaluations(@AuthenticationPrincipal Jwt jwt) {
         String author = jwt.getClaimAsString("name");
         return this.evaluationService.getEvaluationsByAuthor(author)
