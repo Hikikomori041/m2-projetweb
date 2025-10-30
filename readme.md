@@ -1,5 +1,5 @@
 # Présentation
-Dépôt du projet de cours de 2025 de Service Web du Master 2 Informatique, à la Faculté des Sciences et Technologies, Université de Lorraine.
+Projet de cours de 2025 de Service Web du Master 2 Informatique, à la Faculté des Sciences et Technologies, Université de Lorraine.
 
 # Auteur
 Nicolas BLACHÈRE
@@ -13,6 +13,7 @@ Fichier essentiel aux connections oauth2.
 La configuration de base de l'UI Swagger de notre API.
 #### `TrailingSlashInterceptor & WebConfig`
 Ces fichiers ne sont là que pour supprimer le dernier "/" qui serait potentiellement écrit sur une route.
+
 Par exemple, "/restaurant/" devient "/restaurant". Ce n'était pas demandé, mais je me suis fait plaisir.
 
 ### `/controller`
